@@ -107,6 +107,10 @@ chunk_store_config:
     fifocache:
       max_size_bytes: 500MB
 
+querier:
+  max_concurrent: 20
+  query_timeout: 5m
+
 query_range:
   align_queries_with_step: true
   max_retries: 5
@@ -117,6 +121,4 @@ query_range:
       fifocache:
         max_size_items: 1024
         validity: 24h
-querier:
-  max_concurrent: 20
-  query_timeout: 5m
+
