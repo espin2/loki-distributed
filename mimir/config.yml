@@ -2,11 +2,10 @@ admin_client:
   storage:
     type: s3
     s3:
-      access_key_id: {{ .Values.minio.rootUser }}
+      access_key_id: ${S3_ACCESS_KEY_ID}
       bucket_name: enterprise-metrics-admin
-      endpoint: {{ .Release.Name }}-minio.{{ .Release.Namespace }}.svc:9000
-      insecure: true
-      secret_access_key: {{ .Values.minio.rootPassword }}
+      # insecure: true
+      secret_access_key: ${S3_SECRET_ACCESS_KEY}
 
 blocks_storage:
   backend: s3
