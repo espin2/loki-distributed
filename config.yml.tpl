@@ -10,14 +10,11 @@ server:
 
 common:
   replication_factor: 2
-  # Tell Loki which address to advertise
   instance_addr: {{ env "NOMAD_IP_grpc" }}
-  # Failure domain
-  # Must be the same as specified in job constraints
-  instance_availability_zone: {{ env "node.unique.name" }}
-  zone_awareness_enabled: true
+
   ring:
-    # Tell Loki which address to advertise in ring
+    instance_availability_zone: {{ env "node.unique.name" }}
+    zone_awareness_enabled: true
     instance_addr: {{ env "NOMAD_IP_grpc" }}
     kvstore:
       store: consul
@@ -38,10 +35,9 @@ ingester:
 
 
 frontend:
-  frontend: loki-query-frontend.service.consul:9096
-  retention_period: 0s
   compress_responses: true
   log_queries_longer_than: 5s
+  scheduler_address: loki-query-scheduler.service.consul:9096
 
 
 frontend_worker:
