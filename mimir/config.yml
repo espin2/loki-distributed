@@ -41,16 +41,16 @@ distributor:
         host: {{ env "attr.unique.network.ip-address" }}:8500
 
 ingester:
-  final_sleep: 0s
-  num_tokens: 512
-  tokens_file_path: /data/tokens
-  unregister_on_shutdown: false
   ring:
     kvstore:
       store: consul
       prefix: mimir-distributed/
       consul:
         host: {{ env "attr.unique.network.ip-address" }}:8500
+    final_sleep: 0s
+    num_tokens: 512
+    tokens_file_path: /data/tokens
+    unregister_on_shutdown: false
 
 ingester_client:
   grpc_client_config:
@@ -70,10 +70,6 @@ querier:
 query_scheduler:
   max_outstanding_requests_per_tenant: 800
   ring:
-    final_sleep: 0s
-    num_tokens: 512
-    tokens_file_path: /data/tokens
-    unregister_on_shutdown: false
     kvstore:
       store: consul
       prefix: mimir-distributed/
