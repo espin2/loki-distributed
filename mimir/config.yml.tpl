@@ -77,9 +77,6 @@ query_scheduler:
       consul:
         host: {{ env "attr.unique.network.ip-address" }}:8500
 
-runtime_config:
-  file: /local/runtime.yaml
-
 server:
   grpc_server_max_concurrent_streams: 1000
   grpc_server_max_connection_age: 2m
