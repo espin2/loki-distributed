@@ -1,5 +1,5 @@
 activity_tracker:
-  filepath: /local/active-query-tracker/activity.log
+  filepath: /local/activity.log
 
 blocks_storage:
   backend: s3
