@@ -1,49 +1,111 @@
 auth_enabled: false
+
 server:
-  http_listen_port: 3100
-distributor:
+  log_level: info
+  http_listen_port: {{ env "NOMAD_PORT_http" }}
+  grpc_listen_port: {{ env "NOMAD_PORT_grpc" }}
+  http_server_read_timeout: 300s
+  http_server_write_timeout: 300s
+  http_server_idle_timeout: 300s
+
+common:
+  replication_factor: 2
+  # Tell Loki which address to advertise
+  instance_addr: {{ env "NOMAD_IP_grpc" }}
+  # Failure domain
+  # Must be the same as specified in job constraints
+  instance_availability_zone: {{ env "node.unique.name" }}
+  zone_awareness_enabled: true
   ring:
+    # Tell Loki which address to advertise in ring
+    instance_addr: {{ env "NOMAD_IP_grpc" }}
     kvstore:
-      store: memberlist
-memberlist:
-  join_members:
-    - loki-memberlist
+      store: consul
+      prefix: loki/
+      consul:
+        host: {{ env "attr.unique.network.ip-address" }}:8500
+
 ingester:
-  lifecycler:
-    ring:
-      kvstore:
-        store: memberlist
-      replication_factor: 1
   chunk_idle_period: 30m
+  chunk_retain_period: 0s
   chunk_block_size: 262144
   chunk_encoding: snappy
-  chunk_retain_period: 1m
+  chunk_target_size: 1572864
+  max_chunk_age: 1h
   max_transfer_retries: 0
   wal:
-    dir: /local/loki/wal
+    enabled: false
+
+
+frontend:
+  frontend: loki-query-frontend.service.consul:9096
+  retention_period: 0s
+  compress_responses: true
+  log_queries_longer_than: 5s
+
+
+frontend_worker:
+  frontend_address: loki-query-frontend.service.consul:9096
+
+
+schema_config:
+  configs:
+  - from: 2022-05-15
+    store: boltdb-shipper
+    object_store: aws
+    schema: v12
+    index:
+      prefix: index_
+      period: 24h
+
+storage_config:
+  boltdb_shipper:
+    active_index_directory: {{ env "NOMAD_ALLOC_DIR" }}/data/index
+    cache_location: {{ env "NOMAD_ALLOC_DIR" }}/data/index-cache
+    shared_store: s3
+    index_gateway_client:
+      server_address: loki-index-gateway.service.consul:9097
+
+  aws:
+    bucketnames: efishery-loki
+    region: ap-southeast-1
+    access_key_id: ${S3_ACCESS_KEY_ID}
+    secret_access_key: ${S3_SECRET_ACCESS_KEY}
+    s3forcepathstyle: true
+
+compactor:
+  working_directory: {{ env "NOMAD_ALLOC_DIR" }}/compactor
+  shared_store: s3
+  retention_enabled: true
+  compaction_interval: 10m
+  retention_delete_delay: 2h
+  retention_delete_worker_count: 150
+
 limits_config:
   enforce_metric_name: false
   reject_old_samples: true
   reject_old_samples_max_age: 168h
   max_cache_freshness_per_query: 10m
-  split_queries_by_interval: 15m
-schema_config:
-  configs:
-  - from: 2020-09-07
-    store: boltdb-shipper
-    object_store: filesystem
-    schema: v11
-    index:
-      prefix: loki_index_
-      period: 24h
-storage_config:
-  boltdb_shipper:
-    shared_store: filesystem
-    active_index_directory: /local/loki/index
-    cache_location: /local/loki/cache
-    cache_ttl: 168h
-  filesystem:
-    directory: /local/loki/chunks
+  max_global_streams_per_user: 0
+  max_query_length: 721h
+  max_query_parallelism: 32
+  max_query_series: 5000
+  max_streams_per_user: 0
+  retention_period: 744h
+  per_stream_rate_limit: 10MB
+  per_stream_rate_limit_burst: 20MB
+  ingestion_rate_strategy: global
+  ingestion_rate_mb: 60
+  ingestion_burst_size_mb: 20
+  split_queries_by_interval: 30m
+
+chunk_store_config:
+  max_look_back_period: 0s
+  chunk_cache_config:
+    enable_fifocache: true
+    fifocache:
+      max_size_bytes: 500MB
+
 query_range:
   align_queries_with_step: true
   max_retries: 5
@@ -53,12 +115,7 @@ query_range:
       enable_fifocache: true
       fifocache:
         max_size_items: 1024
-        ttl: 24h
-frontend_worker:
-  frontend_address: queryFrontend:9095
-frontend:
-  log_queries_longer_than: 5s
-  compress_responses: true
-  tail_proxy_url: http://querier:3100
-compactor:
-  shared_store: filesystem
+        validity: 24h
+querier:
+  max_concurrent: 20
+  query_timeout: 5m
