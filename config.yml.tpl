@@ -39,6 +39,7 @@ frontend:
   log_queries_longer_than: 5s
   # scheduler_address: loki-query-scheduler.service.consul:9096
   tail_proxy_url: http://loki-querier.service.consul:3100
+  downstream_url: http://loki-querier.service.consul:3100
 
 
 frontend_worker:
