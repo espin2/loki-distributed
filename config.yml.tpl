@@ -63,6 +63,7 @@ storage_config:
       server_address: loki-index-gateway.service.consul:9097
 
   aws:
+    s3: s3://ap-southeast-1/efishery-loki
     bucketnames: efishery-loki
     region: ap-southeast-1
     access_key_id: ${S3_ACCESS_KEY_ID}
