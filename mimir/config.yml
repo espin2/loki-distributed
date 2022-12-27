@@ -41,12 +41,25 @@ frontend_worker:
     max_send_msg_size: 419430400 # 400MiB
   scheduler_address: mimir-query-scheduler.service.consul:9096
 
+distributor:
+ring:
+  kvstore:
+    store: consul
+    prefix: mimir-distributed/
+    consul:
+      host: {{ env "attr.unique.network.ip-address" }}:8500
+
 ingester:
   ring:
     final_sleep: 0s
     num_tokens: 512
     tokens_file_path: /data/tokens
     unregister_on_shutdown: false
+    kvstore:
+      store: consul
+      prefix: mimir-distributed/
+      consul:
+        host: {{ env "attr.unique.network.ip-address" }}:8500
 
 ingester_client:
   grpc_client_config:
@@ -65,6 +78,16 @@ querier:
 
 query_scheduler:
   max_outstanding_requests_per_tenant: 800
+  ring:
+    final_sleep: 0s
+    num_tokens: 512
+    tokens_file_path: /data/tokens
+    unregister_on_shutdown: false
+    kvstore:
+      store: consul
+      prefix: mimir-distributed/
+      consul:
+        host: {{ env "attr.unique.network.ip-address" }}:8500
 
 runtime_config:
   file: /local/runtime.yaml
