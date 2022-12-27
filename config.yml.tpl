@@ -42,6 +42,7 @@ frontend:
 
 
 frontend_worker:
+  scheduler_address: loki-query-scheduler.service.consul:9096
   frontend_address: loki-query-frontend.service.consul:9096
 
 
