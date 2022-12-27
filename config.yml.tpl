@@ -18,7 +18,7 @@ common:
     instance_addr: {{ env "NOMAD_IP_grpc" }}
     kvstore:
       store: consul
-      prefix: loki/
+      prefix: loki-distributed/
       consul:
         host: {{ env "attr.unique.network.ip-address" }}:8500
 
