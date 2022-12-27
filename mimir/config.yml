@@ -1,12 +1,3 @@
-admin_client:
-  storage:
-    type: s3
-    s3:
-      access_key_id: ${S3_ACCESS_KEY_ID}
-      bucket_name: enterprise-metrics-admin
-      # insecure: true
-      secret_access_key: ${S3_SECRET_ACCESS_KEY}
-
 blocks_storage:
   backend: s3
   bucket_store:
@@ -42,19 +33,19 @@ frontend_worker:
   scheduler_address: mimir-query-scheduler.service.consul:9096
 
 distributor:
-ring:
-  kvstore:
-    store: consul
-    prefix: mimir-distributed/
-    consul:
-      host: {{ env "attr.unique.network.ip-address" }}:8500
+  ring:
+    kvstore:
+      store: consul
+      prefix: mimir-distributed/
+      consul:
+        host: {{ env "attr.unique.network.ip-address" }}:8500
 
 ingester:
+  final_sleep: 0s
+  num_tokens: 512
+  tokens_file_path: /data/tokens
+  unregister_on_shutdown: false
   ring:
-    final_sleep: 0s
-    num_tokens: 512
-    tokens_file_path: /data/tokens
-    unregister_on_shutdown: false
     kvstore:
       store: consul
       prefix: mimir-distributed/
@@ -70,7 +61,7 @@ limits:
   max_query_parallelism: 240
   max_cache_freshness: 10m
 
-consul:
+consul_config:
   host: {{ env "attr.unique.network.ip-address" }}:8500
   
 querier:
