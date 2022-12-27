@@ -11,6 +11,7 @@ server:
 common:
   replication_factor: 2
   instance_addr: {{ env "NOMAD_IP_grpc" }}
+  compactor_address: loki-compactor.service.consul:3100
 
   ring:
     instance_availability_zone: {{ env "node.unique.name" }}
