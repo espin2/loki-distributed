@@ -1,7 +1,3 @@
-server:
-  http_listen_port: {{ env "NOMAD_PORT_http" }}
-  grpc_listen_port: {{ env "NOMAD_PORT_grpc" }}
-  
 activity_tracker:
   filepath: /local/activity.log
 
@@ -87,6 +83,8 @@ server:
   grpc_server_max_connection_age: 2m
   grpc_server_max_connection_age_grace: 5m
   grpc_server_max_connection_idle: 1m
+  http_listen_port: {{ env "NOMAD_PORT_http" }}
+  grpc_listen_port: {{ env "NOMAD_PORT_grpc" }}
 
 store_gateway:
   sharding_ring:
