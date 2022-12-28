@@ -1,3 +1,7 @@
+server:
+  http_listen_port: {{ env "NOMAD_PORT_http" }}
+  grpc_listen_port: {{ env "NOMAD_PORT_grpc" }}
+  
 activity_tracker:
   filepath: /local/activity.log
 
