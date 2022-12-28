@@ -16,7 +16,7 @@ blocks_storage:
     region: ap-southeast-1
 
   tsdb:
-    dir: /local/data/tsdb
+    dir: /local/tsdb
 
 compactor:
   compaction_interval: 30m
@@ -24,7 +24,7 @@ compactor:
   max_closing_blocks_concurrency: 2
   max_opening_blocks_concurrency: 4
   symbols_flushers_concurrency: 4
-  data_dir: "/local/data"
+  data_dir: "/local/"
   sharding_ring:
     wait_stability_min_duration: 1m
     
@@ -54,7 +54,7 @@ ingester:
         host: {{ env "attr.unique.network.ip-address" }}:8500
     final_sleep: 0s
     num_tokens: 512
-    tokens_file_path: /data/tokens
+    tokens_file_path: /local/tokens
     unregister_on_shutdown: false
 
 ingester_client:
@@ -87,5 +87,5 @@ server:
 store_gateway:
   sharding_ring:
     wait_stability_min_duration: 1m
-    tokens_file_path: /local/data/tokens
+    tokens_file_path: /local/tokens
 
