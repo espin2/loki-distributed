@@ -5,6 +5,7 @@ blocks_storage:
   backend: s3
   bucket_store:
     max_chunk_pool_bytes: 12884901888 # 12GiB
+    sync_dir: "/local/tsdb-sync/"
 
   s3:
     access_key_id: ${S3_ACCESS_KEY_ID}
